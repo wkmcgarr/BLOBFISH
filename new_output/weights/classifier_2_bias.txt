@@ -1,0 +1,2 @@
+# shape: (5,), quantized scale: 0.00700597
+       9     -12       1      -2       0

@@ -1,0 +1,450 @@
+# shape: [32, 3, 3, 3]
+# scale: 0.02475770, zero_point: 0
+
+[output_channel 0]
+ in_channel 0:
+   -17   -18    -4
+   -18     5   -17
+    12    23    17
+ in_channel 1:
+     9    -2   -12
+   -22   -12   -20
+    -1    15     9
+ in_channel 2:
+     1     1    10
+     2    11     1
+    10    12    -1
+
+[output_channel 1]
+ in_channel 0:
+   -10     5    -1
+    26    16    -2
+   -22     4   -17
+ in_channel 1:
+    19   -11    16
+    32     7     0
+   -31   -24   -18
+ in_channel 2:
+    -9   -22    21
+    31    22    10
+     3   -28   -18
+
+[output_channel 2]
+ in_channel 0:
+   -14    10    -5
+    -5    10    -5
+    -9   -12    18
+ in_channel 1:
+     5    23     4
+   -19    -9   -19
+    -6   -15    12
+ in_channel 2:
+    -4    23    -8
+    -9   -19   -23
+    11    -2    15
+
+[output_channel 3]
+ in_channel 0:
+    18   -38    23
+    -7   -27    21
+   -11     2    16
+ in_channel 1:
+    -1   -32    21
+     4    -6    12
+    16   -12    17
+ in_channel 2:
+    23   -23    22
+    24   -39     7
+     4    -4   -12
+
+[output_channel 4]
+ in_channel 0:
+     9   -34    19
+     9    26    14
+   -22   -33    19
+ in_channel 1:
+   -22   -22     8
+    25    12     0
+   -18    -3    -3
+ in_channel 2:
+    14   -33     1
+    -4    26    26
+    18   -32     4
+
+[output_channel 5]
+ in_channel 0:
+    -5     3   -20
+    11    20     9
+    -1    18    27
+ in_channel 1:
+     9    -5   -10
+     7     2    17
+   -23    -5     1
+ in_channel 2:
+    18    19     8
+   -21    13    12
+   -19   -24   -18
+
+[output_channel 6]
+ in_channel 0:
+   -11    17    11
+     8   -64   -11
+    41    24     3
+ in_channel 1:
+   -18    -1    38
+    20   -70    -3
+    30    12   -25
+ in_channel 2:
+   -33    -1    52
+    -3   -35    38
+    10   -14   -29
+
+[output_channel 7]
+ in_channel 0:
+     6     4   -21
+     3    16   -31
+    13    15   -14
+ in_channel 1:
+     0    19   -17
+    19     2   -13
+     3    -3   -23
+ in_channel 2:
+    -3    16   -25
+   -15    16    -4
+     8    22     3
+
+[output_channel 8]
+ in_channel 0:
+   -25   -15    -1
+   -44    17    39
+   -14    31    29
+ in_channel 1:
+    22   -37    -8
+   -32   -13     5
+    13    19    20
+ in_channel 2:
+    26   -18     8
+    -3     1   -11
+   -30     7   -15
+
+[output_channel 9]
+ in_channel 0:
+    19    -6   -10
+    24    -5   -16
+    22    -1   -26
+ in_channel 1:
+     4    10    -1
+     0   -16   -12
+    21    23   -27
+ in_channel 2:
+    -7    -9     0
+    34     9   -29
+    13     4   -16
+
+[output_channel 10]
+ in_channel 0:
+     6     1     5
+     2    -2   -11
+    -2     1   -13
+ in_channel 1:
+    -9    -6    -1
+     3     1   -13
+     9    -6    -8
+ in_channel 2:
+    18    24     4
+    21     9    -1
+     2     4     1
+
+[output_channel 11]
+ in_channel 0:
+   -40   -75     5
+    19   -16    16
+   -11    50    49
+ in_channel 1:
+   -34   -64    60
+    36    82   -42
+    60   -14   -97
+ in_channel 2:
+   -40    42    83
+   -51    41    17
+   -12    20   -97
+
+[output_channel 12]
+ in_channel 0:
+    13    13    18
+    -3     4   -56
+     4   -18    15
+ in_channel 1:
+    -6    31    17
+     1    11   -45
+    15    -5    -3
+ in_channel 2:
+    -7    31    23
+     7   -10   -35
+   -16   -19    12
+
+[output_channel 13]
+ in_channel 0:
+   -10   -24   -26
+    26    10     8
+    -5     2    18
+ in_channel 1:
+    14   -18   -24
+   -11    17   -29
+    14    28    20
+ in_channel 2:
+    11   -16    -9
+     2     3   -22
+   -13    19    27
+
+[output_channel 14]
+ in_channel 0:
+    64    88    93
+   -54   -25    58
+   -87   -31   -51
+ in_channel 1:
+   -31   -13   -29
+   -13    25   -45
+    70   -19   -39
+ in_channel 2:
+     5   -50   -37
+    18   -37   -26
+    56    34    78
+
+[output_channel 15]
+ in_channel 0:
+     5   -64    31
+    30   -40   -41
+    25    -8   -10
+ in_channel 1:
+    38   -42     2
+    61    41    41
+   -18    46    15
+ in_channel 2:
+     7   -28    15
+    -7    21   -11
+   -59    -3   -53
+
+[output_channel 16]
+ in_channel 0:
+    35   -28   -22
+    -2   -24    14
+   -24   -25    -5
+ in_channel 1:
+    42    -7     6
+    13   -40    -6
+    22     1    44
+ in_channel 2:
+    -4    15     1
+    29   -42   -10
+   -14    11    19
+
+[output_channel 17]
+ in_channel 0:
+    -7   -12    -6
+    -8   -33    -8
+    -5    -4     5
+ in_channel 1:
+     1    -2    12
+     6    -4    -6
+    -5   -13     8
+ in_channel 2:
+     9    -2     1
+     4     9     1
+     8   -13    -5
+
+[output_channel 18]
+ in_channel 0:
+     7   -21   -21
+   -12    11    -2
+   -15   -19     6
+ in_channel 1:
+     3   -13   -16
+   -11     2    22
+    14    -3    10
+ in_channel 2:
+     2     3   -23
+    26    16     7
+    18    11     8
+
+[output_channel 19]
+ in_channel 0:
+   -14     0    -4
+    19    18     1
+   -27     4    11
+ in_channel 1:
+    14    -5    -9
+    27    15    -6
+   -14   -10     8
+ in_channel 2:
+   -15   -30   -28
+    25    14   -17
+   -21     2    -3
+
+[output_channel 20]
+ in_channel 0:
+   -13   -24    22
+    -6    21    11
+   -10     0    -4
+ in_channel 1:
+   -14   -15    -7
+   -26    28    24
+    21    21   -32
+ in_channel 2:
+   -30     1    -7
+   -32    18    17
+     2    31    -1
+
+[output_channel 21]
+ in_channel 0:
+    43   -12    -2
+    18    73   -68
+   -59    34    31
+ in_channel 1:
+    -3   -20   -33
+   -56    58   -36
+   -32   -16    56
+ in_channel 2:
+    15    35   -21
+   -50    49    22
+   -23    -5     5
+
+[output_channel 22]
+ in_channel 0:
+    -1    -1    11
+   -16    -1    12
+    -9   -27    -6
+ in_channel 1:
+     6    21     0
+   -17    32    21
+   -14   -22    25
+ in_channel 2:
+    -7    17    -8
+   -36     9    29
+    -3   -27    16
+
+[output_channel 23]
+ in_channel 0:
+    27    16    23
+     8   -17   -17
+    -1   -25   -52
+ in_channel 1:
+   -18     8    -3
+    24   -10     8
+    -1    33    35
+ in_channel 2:
+   -54   -16   -19
+   -52     4    59
+   -45    33    52
+
+[output_channel 24]
+ in_channel 0:
+   -44    78    42
+   -24   -50     6
+   -24   -81    75
+ in_channel 1:
+    28    36   -28
+    -1   -10    63
+   -59   -27    47
+ in_channel 2:
+    -7   -13  -127
+    51     7     8
+    84    40   -65
+
+[output_channel 25]
+ in_channel 0:
+    -3   -10    -2
+   -11     2     6
+     6    -7     2
+ in_channel 1:
+    -2     7    -6
+     6    18    11
+     9    19    20
+ in_channel 2:
+    -1     2    -9
+     3    -1     2
+    -8    -4     1
+
+[output_channel 26]
+ in_channel 0:
+     2    14    -4
+   -13   -14    -6
+    -6   -26    10
+ in_channel 1:
+    17    -2    -5
+    -5     0     8
+     1   -24   -18
+ in_channel 2:
+    20    19    20
+   -13     8    21
+    13   -16     5
+
+[output_channel 27]
+ in_channel 0:
+    10    22    13
+   -21    33   -19
+     6   -21   -40
+ in_channel 1:
+   -17    24    10
+   -26    28     5
+    14    -2   -28
+ in_channel 2:
+   -29    10   -25
+    -3    -2     3
+    29    22   -18
+
+[output_channel 28]
+ in_channel 0:
+    21   -21    23
+    17     6    26
+    31   -12   -36
+ in_channel 1:
+   -13   -30   -22
+    -4   -12    13
+   -11   -19   -37
+ in_channel 2:
+    11     9     2
+   -20     7    42
+    33   -11   -29
+
+[output_channel 29]
+ in_channel 0:
+     7    38     6
+    36     6   -14
+    26   -35   -35
+ in_channel 1:
+   -19    13    13
+    14    13    -9
+    -3   -15     1
+ in_channel 2:
+   -17    10    -3
+    12   -13   -16
+     6   -28    23
+
+[output_channel 30]
+ in_channel 0:
+    10    10    12
+   -10    19     7
+     8   -13   -25
+ in_channel 1:
+   -10     8    -2
+     9     7    -2
+     6   -11   -27
+ in_channel 2:
+   -25   -11    10
+   -15    27    18
+     6    20     7
+
+[output_channel 31]
+ in_channel 0:
+    -2    15     4
+    25   -17    15
+    26    20    23
+ in_channel 1:
+   -12    13   -32
+     4   -37   -35
+     9   -41   -25
+ in_channel 2:
+    42    11   -16
+    -4    15   -15
+   -10   -27    33

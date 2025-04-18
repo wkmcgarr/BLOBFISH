@@ -1,0 +1,11 @@
+
+clk_divider cd ( 
+.clk(clk_main), 
+.rstb(rsbt),
+.clk_divide_num(23'd2500),           
+.delay_num(23'd100),             
+   .switch_num(10'd50),                
+     .clk_en(10'b1111111111),    
+.ADC_always_on(1'b0), 
+ .clk_Sample(samp_clk)
+); 
