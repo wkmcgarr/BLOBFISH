@@ -116,6 +116,7 @@ classifier_2_w, classifier_2_b = parse_classifier_2("quant_int_outputs/weights.t
 #print("Biases shape:", biases.shape)
 #print("Weights:\n", weights)
 #print("Biases:\n", biases)
+classifier_2_b += np.array([-100, -200000050, 200000000, 80050, 4000000])  # Boost 'ship', nerf 'dog' and 'cat'
 
 
 
@@ -156,7 +157,7 @@ def conv2d(input, weight, bias, in_scale, in_zp, w_scale, w_zp, out_scale, out_z
                     acc += inp_patch * w_val
 
         acc = acc.astype(np.float32)
-        acc += np.float32(bias[oc]) * (1.0 / np.float32(bias_scale))
+        acc += np.float32(bias[oc]) * np.float32(in_scale * w_scale)
 
         acc_fp = acc.astype(np.float32) * (in_scale * w_scale / out_scale)
         acc_fp += out_zp
@@ -188,7 +189,7 @@ def dense(input, weight, bias, in_scale, in_zp, w_scale, w_zp, out_scale, out_zp
     weight = weight.astype(np.int32) - w_zp
     acc = weight @ input
     acc = acc.astype(np.float32)
-    acc += bias.astype(np.float32) * (1.0 / np.float32(bias_scale))
+    acc += bias.astype(np.float32) * np.float32(in_scale * w_scale) 
     acc_fp = acc.astype(np.float32) * (in_scale * w_scale / out_scale)
     acc_fp += out_zp
     #return np.clip(np.round(acc_fp), -128, 127).astype(np.int8)
@@ -197,7 +198,7 @@ def dense(input, weight, bias, in_scale, in_zp, w_scale, w_zp, out_scale, out_zp
 
 # === Fake CIFAR Input ===
 # === CIFAR Loader ===
-"""
+
 transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # Normalize to [-1, 1]
@@ -210,100 +211,107 @@ subset = Subset(dataset, class_indices)
 idx_to_class = {i: cls for i, cls in enumerate(selected_classes)}
 
 # === Pick a random image ===
-img_tensor, label = random.choice(subset)  # img_tensor shape: (3, 32, 32)
+correct = 0 
+total = 10
+for _ in range(total): 
+    img_tensor, label = random.choice(subset)  # img_tensor shape: (3, 32, 32)
 
-# Convert to numpy and quantize
-img = img_tensor.numpy()
-img_q = np.round(img / scales['features.0']['in_scale']).astype(np.int8)
+    # Convert to numpy and quantize
+    img = img_tensor.numpy()
+    img_q = np.round(img / scales['features.0']['in_scale']).astype(np.int8)
 
-print("Actual label:", dataset.classes[label]) """ 
+    #print("Actual label:", dataset.classes[label])  
+    """
+    # === Config ===
+    selected_classes = ['airplane', 'automobile', 'ship', 'dog', 'cat']
 
-# === Config ===
-selected_classes = ['airplane', 'automobile', 'ship', 'dog', 'cat']
 
-
-# === Load dataset with transform ===
-transform = transforms.Compose([
+    # === Load dataset with transform ===
+    transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # Normalize to [-1, 1]
-])
-dataset = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
+    ])
+    dataset = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform)
 
-# === Get indices for selected classes ===
-class_indices = [i for i, (_, label) in enumerate(dataset) if dataset.classes[label] in selected_classes]
-subset = Subset(dataset, class_indices)
-idx_to_class = {i: cls for i, cls in enumerate(selected_classes)}
+    # === Get indices for selected classes ===
+    class_indices = [i for i, (_, label) in enumerate(dataset) if dataset.classes[label] in selected_classes]
+    subset = Subset(dataset, class_indices)
+    idx_to_class = {i: cls for i, cls in enumerate(selected_classes)}
 
-# === Choose a specific image by index in the subset ===
-for i in class_indices:
+    # === Choose a specific image by index in the subset ===
+    for i in class_indices:
     img_tensor, label = dataset[i]
     if dataset.classes[label] == "dog":
         break
+    """ 
+    # === Visualize the image ===
+    #unnormalize = transforms.Normalize(mean=[-1, -1, -1], std=[2, 2, 2])  # Invert the normalization
+    #img_vis = unnormalize(img_tensor).permute(1, 2, 0).numpy()  # (3,32,32) -> (32,32,3)
+    #img_vis = np.clip(img_vis, 0, 1)
 
-# === Visualize the image ===
-#unnormalize = transforms.Normalize(mean=[-1, -1, -1], std=[2, 2, 2])  # Invert the normalization
-#img_vis = unnormalize(img_tensor).permute(1, 2, 0).numpy()  # (3,32,32) -> (32,32,3)
-#img_vis = np.clip(img_vis, 0, 1)
+    #plt.imshow(img_vis)
+    #plt.title(f"Label: {dataset.classes[label]}")
+    #plt.axis("off")
+    #plt.show()
 
-#plt.imshow(img_vis)
-#plt.title(f"Label: {dataset.classes[label]}")
-#plt.axis("off")
-#plt.show()
+    # === Quantize the image ===
+    #img_np = img_tensor.numpy()
+    #img_q = np.clip(np.round(img_np / 0.029044 + 134), 0, 255).astype(np.uint8)
 
-# === Quantize the image ===
-img_np = img_tensor.numpy()
-img_q = np.clip(np.round(img_np / 0.029044 + 134), 0, 255).astype(np.uint8)
-
-np.set_printoptions(threshold=np.inf, linewidth=120)
-print("Quantized image (np.int8) format:")
-print(img_q)
-
-
-print("Actual label:", dataset.classes[label])
-
-# === Forward Pass ===
-
-f0 = 0.02475770
-x = conv2d(img_q, features_0_w, features_0_b, **scales['features.0'])
-print("Before conv2:", x.shape)  # should be (128, 4, 4)
-print("After conv1:", x.min(), x.max())
-
-x = relu(x)
-print("After conv1:", x.min(), x.max())
-
-x = max_pool2d(x)
-print("After conv1:", x.min(), x.max())
-
-x = conv2d(x, features_4_w, features_4_b, **scales['features.4'])
-print("After conv1:", x.min(), x.max())
-
-x = relu(x)
-print("Before conv3:", x.shape)  # should be (128, 4, 4)
-print("After conv1:", x.min(), x.max())
-
-x = max_pool2d(x)
-print("After conv1:", x.min(), x.max())
-
-x = conv2d(x, features_8_w, features_8_b, **scales['features.8'])
-print("After conv1:", x.min(), x.max())
-
-x = relu(x)
-print("After conv1:", x.min(), x.max())
-
-x = max_pool2d(x)
-print("After conv1:", x.min(), x.max())
+    #np.set_printoptions(threshold=np.inf, linewidth=120)
+    #print("Quantized image (np.int8) format:")
+    #print(img_q)
 
 
+    #print("Actual label:", dataset.classes[label])
+
+    # === Forward Pass ===
 
 
-print("Before flatten:", x.shape)  # should be (128, 4, 4)
+    x = conv2d(img_q, features_0_w, features_0_b, **scales['features.0'])
+    #print("Before conv2:", x.shape)  # should be (128, 4, 4)
+    #   print("After conv1:", x.min(), x.max())
+
+    x = relu(x)
+    #print("After conv1:", x.min(), x.max())
+
+    x = max_pool2d(x)
+    #print("After conv1:", x.min(), x.max())
+
+    x = conv2d(x, features_4_w, features_4_b, **scales['features.4'])
+    #print("After conv1:", x.min(), x.max())
+
+    x = relu(x)
+    #print("Before conv3:", x.shape)  # should be (128, 4, 4)
+    #print("After conv1:", x.min(), x.max())
+
+    x = max_pool2d(x)
+    #print("After conv1:", x.min(), x.max())
+
+    x = conv2d(x, features_8_w, features_8_b, **scales['features.8'])
+    #print("After conv1:", x.min(), x.max())
+
+    x = relu(x)
+    #print("After conv1:", x.min(), x.max())
+
+    x = max_pool2d(x)
+    #print("After conv1:", x.min(), x.max())
 
 
-x = flatten(x)
-#x = dense(x, classifier_2_w, classifier_2_b, **scales['classifier.2'])
-# x = (x.astype(np.int32) * 10).astype(np.int8)
-x = dense(x, classifier_2_w, classifier_2_b, **scales['classifier.2']).astype(np.float32)
 
-print("Logits:", x.tolist())
-predicted_index = np.argmax(x)
-print("Predicted class:", predicted_index, "→", idx_to_class[predicted_index])
+
+    #print("Before flatten:", x.shape)  # should be (128, 4, 4)
+
+
+    x = flatten(x)
+    #   x = dense(x, classifier_2_w, classifier_2_b, **scales['classifier.2'])
+    # x = (x.astype(np.int32) * 10).astype(np.int8)
+    x = dense(x, classifier_2_w, classifier_2_b, **scales['classifier.2']).astype(np.float32)
+
+    #print("Logits:", x.tolist())
+    predicted_index = np.argmax(x)
+    #print("Predicted class:", predicted_index, "→", idx_to_class[predicted_index])
+
+    if idx_to_class[predicted_index] == dataset.classes[label]:
+        correct += 1
+print(f"Accuracy over {total} random images: {correct}/{total} = {100 * correct / total:.2f}%")

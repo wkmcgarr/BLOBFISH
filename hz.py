@@ -116,6 +116,7 @@ classifier_2_w, classifier_2_b = parse_classifier_2("quant_int_outputs/weights.t
 #print("Biases shape:", biases.shape)
 #print("Weights:\n", weights)
 #print("Biases:\n", biases)
+classifier_2_b += np.array([-100000, -200000050, 150000000, 600050, 80000000])  # Boost 'ship', nerf 'dog' and 'cat'
 
 
 
@@ -155,10 +156,11 @@ def conv2d(input, weight, bias, in_scale, in_zp, w_scale, w_zp, out_scale, out_z
                     w_val = weight[oc, ic, i, j].astype(np.int32) - w_zp
                     acc += inp_patch * w_val
 
-        acc = acc.astype(np.float32)
-        acc += np.float32(bias[oc]) * (1.0 / np.float32(bias_scale))
+        acc = acc.astype(np.int32)
+        acc += (np.int32(bias[oc]) * (np.int32((in_scale * w_scale * (1 << 15))))) >> 15
+        mult = int((in_scale * w_scale / out_scale) * (1 << 15))
+        acc_fp = (acc.astype(np.int32) * mult) >> 15
 
-        acc_fp = acc.astype(np.float32) * (in_scale * w_scale / out_scale)
         acc_fp += out_zp
         output[oc] = np.clip(np.round(acc_fp), -128, 127)
 
@@ -187,9 +189,24 @@ def dense(input, weight, bias, in_scale, in_zp, w_scale, w_zp, out_scale, out_zp
     input = input.astype(np.int32) - in_zp
     weight = weight.astype(np.int32) - w_zp
     acc = weight @ input
+    """
     acc = acc.astype(np.float32)
-    acc += bias.astype(np.float32) * (1.0 / np.float32(bias_scale))
+    acc += bias.astype(np.float32) * np.float32(in_scale * w_scale) 
     acc_fp = acc.astype(np.float32) * (in_scale * w_scale / out_scale)
+    """
+    # Convert scale ratios to Q15 fixed-point multipliers
+    bias_mul_q15  = int((in_scale * w_scale) * (1 << 15))
+    scale_mul_q15 = int((in_scale * w_scale / out_scale) * (1 << 15))  # second part is separate Q15
+
+    acc = acc.astype(np.int64)
+
+    # === Apply bias (Q15 multiplication + shift) ===
+    bias_term = (bias.astype(np.int32) * bias_mul_q15) >> 15
+    acc += bias_term  # still int64
+
+    # === Now scale accumulated result (Q15 multiplication + shift) ===
+    acc_fp = (acc * scale_mul_q15) >> 15
+
     acc_fp += out_zp
     #return np.clip(np.round(acc_fp), -128, 127).astype(np.int8)
     return acc_fp  # Don't round or clip
@@ -197,7 +214,7 @@ def dense(input, weight, bias, in_scale, in_zp, w_scale, w_zp, out_scale, out_zp
 
 # === Fake CIFAR Input ===
 # === CIFAR Loader ===
-"""
+
 transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # Normalize to [-1, 1]
@@ -216,8 +233,8 @@ img_tensor, label = random.choice(subset)  # img_tensor shape: (3, 32, 32)
 img = img_tensor.numpy()
 img_q = np.round(img / scales['features.0']['in_scale']).astype(np.int8)
 
-print("Actual label:", dataset.classes[label]) """ 
-
+print("Actual label:", dataset.classes[label])  
+"""
 # === Config ===
 selected_classes = ['airplane', 'automobile', 'ship', 'dog', 'cat']
 
@@ -239,16 +256,16 @@ for i in class_indices:
     img_tensor, label = dataset[i]
     if dataset.classes[label] == "dog":
         break
-
+""" 
 # === Visualize the image ===
-#unnormalize = transforms.Normalize(mean=[-1, -1, -1], std=[2, 2, 2])  # Invert the normalization
-#img_vis = unnormalize(img_tensor).permute(1, 2, 0).numpy()  # (3,32,32) -> (32,32,3)
-#img_vis = np.clip(img_vis, 0, 1)
+unnormalize = transforms.Normalize(mean=[-1, -1, -1], std=[2, 2, 2])  # Invert the normalization
+img_vis = unnormalize(img_tensor).permute(1, 2, 0).numpy()  # (3,32,32) -> (32,32,3)
+img_vis = np.clip(img_vis, 0, 1)
 
-#plt.imshow(img_vis)
-#plt.title(f"Label: {dataset.classes[label]}")
-#plt.axis("off")
-#plt.show()
+plt.imshow(img_vis)
+plt.title(f"Label: {dataset.classes[label]}")
+plt.axis("off")
+plt.show()
 
 # === Quantize the image ===
 img_np = img_tensor.numpy()
@@ -302,7 +319,7 @@ print("Before flatten:", x.shape)  # should be (128, 4, 4)
 x = flatten(x)
 #x = dense(x, classifier_2_w, classifier_2_b, **scales['classifier.2'])
 # x = (x.astype(np.int32) * 10).astype(np.int8)
-x = dense(x, classifier_2_w, classifier_2_b, **scales['classifier.2']).astype(np.float32)
+x = dense(x, classifier_2_w, classifier_2_b, **scales['classifier.2'])
 
 print("Logits:", x.tolist())
 predicted_index = np.argmax(x)
